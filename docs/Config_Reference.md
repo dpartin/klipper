@@ -2065,6 +2065,14 @@ in this section (CARRIAGE=0 will return activation to the primary carriage).
 Dual carriage support is typically combined with extra extruders - the
 SET_DUAL_CARRIAGE command is often called at the same time as the
 ACTIVATE_EXTRUDER command. Be sure to park the carriages during deactivation.
+Note that during G28 homing, typically the primary carriage is homed first
+followed by the carriage defined in the `[dual_carriage]` config section.
+However, the `[dual_carriage]` carriage will be homed first if both carriages
+home in a positive direction and the [dual_carriage] carriage has a
+`position_endstop` greater than the primary carriage, or if both carriages home
+in a negative direction and the `[dual_carriage]` carriage has a
+`position_endstop` less than the primary carriage.
+
 Additionally, one could use "SET_DUAL_CARRIAGE CARRIAGE=1 MODE=COPY" or
 "SET_DUAL_CARRIAGE CARRIAGE=1 MODE=MIRROR" commands to activate either copying
 or mirroring mode of the dual carriage, in which case it will follow the
@@ -2432,9 +2440,9 @@ sensor_pin:
 #   name in the above list.
 ```
 
-### BMP280/BME280/BME680 temperature sensor
+### BMP180/BMP280/BME280/BME680 temperature sensor
 
-BMP280/BME280/BME680 two wire interface (I2C) environmental sensors.
+BMP180/BMP280/BME280/BME680 two wire interface (I2C) environmental sensors.
 Note that these sensors are not intended for use with extruders and
 heater beds, but rather for monitoring ambient temperature (C),
 pressure (hPa), relative humidity and in case of the BME680 gas level.
@@ -2445,7 +2453,7 @@ temperature.
 ```
 sensor_type: BME280
 #i2c_address:
-#   Default is 118 (0x76). Some BME280 sensors have an address of 119
+#   Default is 118 (0x76). The BMP180 and some BME280 sensors have an address of 119
 #   (0x77).
 #i2c_mcu:
 #i2c_bus:
@@ -3119,6 +3127,26 @@ pin:
 #   parameter.
 ```
 
+### [pwm_tool]
+
+Pulse width modulation digital output pins capable of high speed
+updates (one may define any number of sections with an "output_pin"
+prefix). Pins configured here will be setup as output pins and one may
+modify them at run-time using "SET_PIN PIN=my_pin VALUE=.1" type
+extended [g-code commands](G-Codes.md#output_pin).
+
+```
+[pwm_tool my_tool]
+pin:
+#   The pin to configure as an output. This parameter must be provided.
+#value:
+#shutdown_value:
+#cycle_time: 0.100
+#hardware_pwm: False
+#scale:
+#   See the "output_pin" section for the definition of these parameters.
+```
+
 ### [static_digital_output]
 
 Statically configured digital output pins (one may define any number
@@ -3442,7 +3470,7 @@ run_current:
 
 ### [tmc2240]
 
-Configure a TMC2240 stepper motor driver via SPI bus. To use this
+Configure a TMC2240 stepper motor driver via SPI bus or UART. To use this
 feature, define a config section with a "tmc2240" prefix followed by
 the name of the corresponding stepper config section (for example,
 "[tmc2240 stepper_x]").
@@ -3460,6 +3488,9 @@ cs_pin:
 #spi_software_miso_pin:
 #   See the "common SPI settings" section for a description of the
 #   above parameters.
+#uart_pin:
+#   The pin connected to the TMC2240 DIAG1/SW line. If this parameter
+#   is provided UART communication is used rather then SPI.
 #chain_position:
 #chain_length:
 #   These parameters configure an SPI daisy chain. The two parameters
