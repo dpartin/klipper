@@ -8,6 +8,31 @@ All dates in this document are approximate.
 
 ## Changes
 
+20240123: The output_pin SET_PIN CYCLE_TIME parameter has been
+removed. Use the new
+[pwm_cycle_time](Config_Reference.md#pwm_cycle_time) module if it is
+necessary to dynamically change a pwm pin's cycle time.
+
+20240123: The output_pin `maximum_mcu_duration` parameter is
+deprecated. Use a [pwm_tool config section](Config_Reference.md#pwm_tool)
+instead. The option will be removed in the near future.
+
+20240123: The output_pin `static_value` parameter is deprecated.
+Replace with `value` and `shutdown_value` parameters.  The option will
+be removed in the near future.
+
+20231216: The `[hall_filament_width_sensor]` is changed to trigger filament runout
+when the thickness of the filament exceeds `max_diameter`. The maximum diameter
+defaults to `default_nominal_filament_diameter + max_difference`. See
+[[hall_filament_width_sensor] configuration
+reference](./Config_Reference.md#hall_filament_width_sensor) for more details.
+
+20231207: Several undocumented config parameters in the `[printer]`
+config section have been removed (the buffer_time_low,
+buffer_time_high, buffer_time_start, and move_flush_time parameters).
+
+20231110: Klipper v0.12.0 released.
+
 20230826: If `safe_distance` is set or calculated to be 0 in `[dual_carriage]`,
 the carriages proximity checks will be disabled as per documentation. A user
 may wish to configure `safe_distance` explicitly to prevent accidental crashes
